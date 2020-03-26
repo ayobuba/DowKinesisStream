@@ -17,11 +17,8 @@ jobs:
           name: terraform validate
           command: terraform validate
       - run:
-          name: terraform validate
-          command: terraform fmt -check=true
-      - run:
           name: Install tflint
-          command: curl -L -o /tmp/tflint.zip https://github.com/wata727/tflint/releases/download/v0.4.2/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
+          command: curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip && unzip tflint.zip && rm tflint.zip
       - run:
           name: Check Terraform configurations with tflint
           command: tflint
