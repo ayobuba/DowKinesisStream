@@ -1,0 +1,36 @@
+version: 2
+
+terraform: &terraform
+  docker:
+    - image: hashicorp/terraform:light
+  working_directory: /tmp/workspace/terraform
+
+jobs:
+  build:
+    <<: *terraform
+    steps:
+      - checkout
+      - run:
+          name: terraform init
+          command: terraform init -input=false
+      - run:
+          name: terraform validate
+          command: terraform validate
+      - run:
+          name: terraform validate
+          command: terraform fmt -check=true
+      - run:
+          name: Install tflint
+          command: curl -L -o /tmp/tflint.zip https://github.com/wata727/tflint/releases/download/v0.4.2/tflint_linux_amd64.zip && unzip /tmp/tflint.zip -d /usr/local/bin
+      - run:
+          name: Check Terraform configurations with tflint
+          command: tflint
+      - run:
+          name: terraform plan
+          command: terraform plan -input=false
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
